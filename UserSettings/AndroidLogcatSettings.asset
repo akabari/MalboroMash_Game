@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "PD21ADD664014442",
         "name": "com.Malboro.MalboroGame",
-        "processId": 3677,
+        "processId": 7595,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -108,6 +108,12 @@
             "deviceId": "PD21ADD664014442",
             "name": "com.Malboro.MalboroGame",
             "processId": 3677,
+            "exited": false
+        },
+        {
+            "deviceId": "PD21ADD664014442",
+            "name": "com.Malboro.MalboroGame",
+            "processId": 7595,
             "exited": false
         },
         {

@@ -13,6 +13,7 @@ public class PlatformManage : MonoBehaviour
     [SerializeField] Transform player;
     [SerializeField] Transform USP_Position;
     [SerializeField] MeshRenderer playerMash;
+    [SerializeField] Texture oldCigrateTexture;
     [SerializeField] Texture newCigrateTexture;
 
     [SerializeField] List<GameObject> collectableItems = new List<GameObject>();
@@ -125,6 +126,8 @@ public class PlatformManage : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("StartGame");
+        playerMash.material.SetTexture("_MainTex", oldCigrateTexture);
+
         player.position = startpoint.position;
         player.gameObject.SetActive(true);
         foreach (GameObject g in collectableItems)

@@ -3055,6 +3055,7 @@ MonoBehaviour:
   player: {fileID: 1322875026}
   USP_Position: {fileID: 1772813224}
   playerMash: {fileID: 634777463}
+  oldCigrateTexture: {fileID: 2800000, guid: 447ef1c45b77d499a8e1d975267b85ae, type: 3}
   newCigrateTexture: {fileID: 2800000, guid: 20ebb2713fc3b428e93d180de20c5d6d, type: 3}
   collectableItems:
   - {fileID: 272467160}
