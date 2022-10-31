@@ -5,6 +5,7 @@ using UnityEngine;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlatformManage : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class PlatformManage : MonoBehaviour
     [SerializeField] CinemachineVirtualCamera fullView;
     [SerializeField] CinemachineVirtualCamera followView;
     [SerializeField] CinemachineVirtualCamera focussOnCigi;
+
+    [SerializeField] TMP_Text startText;
+    [SerializeField] TMP_Text endText;
 
     private void Awake()
     {
@@ -61,16 +65,16 @@ public class PlatformManage : MonoBehaviour
 
         collectUI[num].SetActive(obj);
         collectUI[num].transform.position = USP_Position.position + new Vector3(0, 1, 0);
-        collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce)
+        collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutBounce)
                                         .OnComplete(()=> {
-                                            collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce);
-                                            collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.3f).SetEase(Ease.InOutBounce);
+                                            collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutBounce);
+                                            collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f).SetEase(Ease.InOutBounce);
                                         });
 
         if (obj)
         {
             Utility.SoundManager.Instance.Play("transition");
-            DOTween.Sequence().AppendInterval(2.0f).OnComplete(() =>
+            DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
             {
                 DisableCollectUI(num);
             });
@@ -126,6 +130,8 @@ public class PlatformManage : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("StartGame");
+        startText.color = Color.white;
+        endText.color = Color.white;
         playerMash.material.SetTexture("_MainTex", oldCigrateTexture);
 
         player.position = startpoint.position;
@@ -138,6 +144,8 @@ public class PlatformManage : MonoBehaviour
             CameraSwitcher.SwitchCamera(followView);
             DOTween.Sequence().AppendInterval(0.75f).OnComplete(() => {
                 Malboro.Cigarette.IsKinematic?.Invoke(false);
+                startText.color = new Color(103, 100, 89, 255);
+                endText.color = new Color(103, 100, 89, 255);
             });
         });
 
