@@ -15,6 +15,9 @@ public class TriggerPoint : MonoBehaviour
                 gameObject.SetActive(false);
                 EventManager.CollectItems?.Invoke(true, int.Parse(this.name));
                 break;
+            case "Path":
+                gameObject.SetActive(false);
+                break;
         }
     }
 }

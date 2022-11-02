@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Collectable
   - EndGame
+  - Path
   layers:
   - Default
   - TransparentFX

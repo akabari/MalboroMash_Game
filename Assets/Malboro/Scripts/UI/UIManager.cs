@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class UIManager : MonoBehaviour
 {
@@ -19,7 +20,13 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] GameObject exitPopup;
 
+    [SerializeField] GameObject exitBtn;
+
     [SerializeField] Transform starsParent;
+
+    [SerializeField] VideoPlayer completeCigiVideo;
+    [SerializeField] Animator endScreenAnimator;
+    [SerializeField] Animator congratsScreenAnimator;
 
     private void Awake()
     {
@@ -32,6 +39,7 @@ public class UIManager : MonoBehaviour
     {
         bottomPanel.SetActive(false);
         warningScreen.SetActive(true);
+        exitBtn.SetActive(false);
         Invoke("StartGame", 2.0f);
     }
 
@@ -48,6 +56,7 @@ public class UIManager : MonoBehaviour
 
     void StartGame()
     {
+        exitBtn.SetActive(true);
         warningScreen.SetActive(false);
         bottomPanel.SetActive(true);
         startScreen.SetActive(true);
@@ -69,15 +78,20 @@ public class UIManager : MonoBehaviour
     {
         Utility.SoundManager.Instance.Play("complete");
         congratulationScreen.SetActive(true);
-
+        //congratsScreenAnimator.enabled = true;
+        //completeCigiVideo.Stop();
+        //endScreenAnimator.enabled = false;
 
         DOTween.Sequence().Append(starsParent.GetChild(0).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .Append(starsParent.GetChild(1).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .Append(starsParent.GetChild(2).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
-                            .AppendInterval(1f)
+                            .AppendInterval(3f)
                             .OnComplete(() => {
+                                //congratsScreenAnimator.enabled = false;
                                 congratulationScreen.SetActive(false);
                                 endScreen.SetActive(true);
+                                //completeCigiVideo.Play();
+                                //endScreenAnimator.enabled = true;
                             });
 
         //endScreen.SetActive(true);

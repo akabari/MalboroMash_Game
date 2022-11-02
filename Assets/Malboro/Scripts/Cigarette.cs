@@ -14,6 +14,8 @@ namespace Malboro
 
         public float speedAc = 10;
 
+        [SerializeField] Transform player;
+
         private Rigidbody rb;
 
         public static Action<bool> IsKinematic;
@@ -42,6 +44,9 @@ namespace Malboro
 #if !UNITY_EDITOR
             InputSystem.EnableDevice(Gyroscope.current);
             InputSystem.EnableDevice(Accelerometer.current);
+#else
+            Input.gyro.enabled = true;
+            Input.gyro.updateInterval = 0.0167f;
 #endif
             //Debug.Log("Gyroscope.current.enabled : " + Gyroscope.current.enabled);
 
@@ -76,9 +81,15 @@ namespace Malboro
             Vector3 movement = new Vector3(angularVelocity.x, 0.0f, angularVelocity.y);
             rb.AddForce(movement * speed * Time.deltaTime);
 
+            player.Rotate(Vector3.right * angularVelocity.y * speed, Space.World);
 #else
+
+
             Vector3 movement = new Vector3(Input.gyro.gravity.x, 0.0f, Input.gyro.gravity.y);
             rb.AddForce(movement * speed * Time.deltaTime);
+
+            player.Rotate(Vector3.right * Input.acceleration.y * speed, Space.World);
+
 #endif
             // Player movement in mobile devices
             // Building of force vector 
@@ -88,6 +99,6 @@ namespace Malboro
 
 
         }
-        
+
     }
 }

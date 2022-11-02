@@ -28,6 +28,7 @@ public class PlatformManage : MonoBehaviour
 
     [SerializeField] TMP_Text startText;
     [SerializeField] TMP_Text endText;
+    [SerializeField] GameObject pathParent;
 
     private void Awake()
     {
@@ -63,21 +64,59 @@ public class PlatformManage : MonoBehaviour
         num -= 1;
         Malboro.Cigarette.IsKinematic?.Invoke(obj);
 
-        collectUI[num].SetActive(obj);
-        collectUI[num].transform.position = USP_Position.position + new Vector3(0, 1, 0);
-        collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutBounce)
-                                        .OnComplete(()=> {
-                                            collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutBounce);
-                                            collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f).SetEase(Ease.InOutBounce);
-                                        });
-
-        if (obj)
+        if (num == 0)
         {
-            Utility.SoundManager.Instance.Play("transition");
-            DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
-            {
-                DisableCollectUI(num);
+            playerMash.material.SetTexture("_MainTex", newCigrateTexture);
+
+            CameraSwitcher.SwitchCamera(focussOnCigi);
+            DOTween.Sequence().AppendInterval(3.0f).OnComplete(() => {
+                CameraSwitcher.SwitchCamera(followView);
+
+                DOTween.Sequence().AppendInterval(0.7f).OnComplete(() => {
+                    collectUI[num].SetActive(obj);
+                    collectUI[num].transform.position = USP_Position.position; //new Vector3(USP_Position.position.x, USP_Position.position.y, 1);
+                                                                               //collectUI[num].transform.GetChild(0).GetChild(0).DOMoveZ(1, 0.5f);
+                    collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f)
+                                                    .OnComplete(() => {
+                                                        collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f);
+                                                //collectUI[num].transform.GetChild(0).GetChild(1).DOMoveZ(1, 0.5f);
+                                                collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f);
+                                                    });
+
+                    if (obj)
+                    {
+                        Utility.SoundManager.Instance.Play("transition");
+                        DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
+                        {
+                            collectUI[num].SetActive(false);
+                            Malboro.Cigarette.IsKinematic?.Invoke(false);
+                        });
+                    }
+                });
             });
+        }
+        else
+        {
+            collectUI[num].SetActive(obj);
+            collectUI[num].transform.position = USP_Position.position; //new Vector3(USP_Position.position.x, USP_Position.position.y, 1);
+                                                                       //collectUI[num].transform.GetChild(0).GetChild(0).DOMoveZ(1, 0.5f);
+            collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f)
+                                            .OnComplete(() => {
+                                                collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f);
+                                            //collectUI[num].transform.GetChild(0).GetChild(1).DOMoveZ(1, 0.5f);
+                                            collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f);
+                                            });
+
+            if (obj)
+            {
+                Utility.SoundManager.Instance.Play("transition");
+                DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
+                {
+                    collectUI[num].SetActive(false);
+                    Malboro.Cigarette.IsKinematic?.Invoke(false);
+                });
+            }
+
         }
     }
 
@@ -106,13 +145,19 @@ public class PlatformManage : MonoBehaviour
         EventManager.Instance.isStartGame = false;
         EventManager.Instance.isGameOver = true;
 
-        endGameUI.transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutBounce)
-                                        .OnComplete(() => {
-                                            endGameUI.transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutBounce).OnComplete(() => {
-                                                endGameUI.transform.GetChild(0).GetChild(2).DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutBounce);
+        //endGameUI.transform.position = USP_Position.position;// + new Vector3(0, 1, 0);
 
-                                                DOTween.Sequence().Append(endGameUI.transform.GetChild(0).GetChild(3).DOScale(Vector3.one, 0.4f).SetEase(Ease.InOutBounce))
-                                                                    .AppendInterval(1.0f)
+        //endGameUI.transform.GetChild(0).GetChild(0).DOMoveZ(1, 0.5f);
+        endGameUI.transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutBounce)
+                                        .OnComplete(() => {
+                                            //endGameUI.transform.GetChild(0).GetChild(1).DOMoveZ(1, 0.5f);
+                                            endGameUI.transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f).OnComplete(() => {
+                                                //endGameUI.transform.GetChild(0).GetChild(2).DOMoveZ(1, 0.5f);
+                                                endGameUI.transform.GetChild(0).GetChild(2).DOScale(Vector3.one, 0.5f);
+
+                                                //endGameUI.transform.GetChild(0).GetChild(3).DOMoveZ(1, 0.5f);
+                                                DOTween.Sequence().Append(endGameUI.transform.GetChild(0).GetChild(3).DOScale(Vector3.one, 0.5f))
+                                                                    .AppendInterval(2.0f)
                                                                     .OnComplete(() => {
                                                                         UIManager.Instance.gameOver();
 
@@ -130,8 +175,14 @@ public class PlatformManage : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("StartGame");
-        startText.color = Color.white;
-        endText.color = Color.white;
+        pathParent.SetActive(false);
+        for(int i = 0; i < pathParent.transform.childCount; i++)
+        {
+            pathParent.transform.GetChild(i).gameObject.SetActive(true);
+        }
+
+        startText.text = "<color=#ffffff>Start Here</color>";
+        //endText.text = "<color=#ffffff>End Here</color>";
         playerMash.material.SetTexture("_MainTex", oldCigrateTexture);
 
         player.position = startpoint.position;
@@ -144,8 +195,9 @@ public class PlatformManage : MonoBehaviour
             CameraSwitcher.SwitchCamera(followView);
             DOTween.Sequence().AppendInterval(0.75f).OnComplete(() => {
                 Malboro.Cigarette.IsKinematic?.Invoke(false);
-                startText.color = new Color(103, 100, 89, 255);
-                endText.color = new Color(103, 100, 89, 255);
+                startText.text = "<color=#676459>Start Here</color>";
+                //endText.text = "<color=#676459>End Here</color>";
+                pathParent.SetActive(true);
             });
         });
 

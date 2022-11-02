@@ -10,14 +10,14 @@ namespace Utility
 	{
 		#region Unity Methods
 
-		private void OnEnable()
-		{
-			Debug.Log(SoundManager.Instance.IsSoundEffectsOn);
-			if (SoundManager.Instance.IsSoundEffectsOn)
-				gameObject.GetComponent<Image>().sprite = SoundManager.Instance.soundOn;
-			else
-				gameObject.GetComponent<Image>().sprite = SoundManager.Instance.soundOff;
-		}
+		//private void OnEnable()
+		//{
+		//	Debug.Log("SoundOnOff : " + SoundManager.Instance.IsSoundEffectsOn);
+		//	if (SoundManager.Instance.IsSoundEffectsOn)
+		//		gameObject.GetComponent<Image>().sprite = SoundManager.Instance.soundOn;
+		//	else
+		//		gameObject.GetComponent<Image>().sprite = SoundManager.Instance.soundOff;
+		//}
 
 		#endregion
 	}
