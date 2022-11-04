@@ -50,12 +50,12 @@ namespace Malboro
 #endif
             //Debug.Log("Gyroscope.current.enabled : " + Gyroscope.current.enabled);
 
-
+            isKinematic(true);
         }
 
         private void Update()
         {
-            if (EventManager.Instance.isGameOver || EventManager.Instance.isUIOpen)
+            if (EventManager.Instance.isGameOver || EventManager.Instance.isUIOpen || rb.isKinematic)
             {
                 //Debug.Log("isGameOver : " + EventManager.Instance.isGameOver);
                 return;

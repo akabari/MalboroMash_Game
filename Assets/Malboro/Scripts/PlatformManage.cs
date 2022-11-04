@@ -145,6 +145,8 @@ public class PlatformManage : MonoBehaviour
         EventManager.Instance.isStartGame = false;
         EventManager.Instance.isGameOver = true;
 
+        endText.DOFade(0, 0.5f);
+
         //endGameUI.transform.position = USP_Position.position;// + new Vector3(0, 1, 0);
 
         //endGameUI.transform.GetChild(0).GetChild(0).DOMoveZ(1, 0.5f);
@@ -181,7 +183,9 @@ public class PlatformManage : MonoBehaviour
             pathParent.transform.GetChild(i).gameObject.SetActive(true);
         }
 
-        startText.text = "<color=#ffffff>Start Here</color>";
+        endText.DOFade(1, 0f);
+        //startText.text = "<color=#ffffff>Start Here</color>";
+        startText.DOColor(new Color(255, 255, 255, 255), 0f);
         //endText.text = "<color=#ffffff>End Here</color>";
         playerMash.material.SetTexture("_MainTex", oldCigrateTexture);
 
@@ -195,7 +199,8 @@ public class PlatformManage : MonoBehaviour
             CameraSwitcher.SwitchCamera(followView);
             DOTween.Sequence().AppendInterval(0.75f).OnComplete(() => {
                 Malboro.Cigarette.IsKinematic?.Invoke(false);
-                startText.text = "<color=#676459>Start Here</color>";
+                //startText.text = "<color=#676459>Start Here</color>";
+                startText.DOColor(new Color(103f/255f, 100f/255f, 89f/255f, 255f/255f), 1f);
                 //endText.text = "<color=#676459>End Here</color>";
                 pathParent.SetActive(true);
             });
