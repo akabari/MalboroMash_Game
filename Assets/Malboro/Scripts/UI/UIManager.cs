@@ -12,21 +12,24 @@ public class UIManager : MonoBehaviour
 
     public static Action GameOver;
 
-    [SerializeField] GameObject warningScreen;
-    [SerializeField] GameObject startScreen;
-    [SerializeField] GameObject congratulationScreen;
-    [SerializeField] GameObject endScreen;
+    [SerializeField] CanvasGroup warningScreen;
+    [SerializeField] CanvasGroup startScreen;
+    [SerializeField] CanvasGroup congratulationScreen;
+    [SerializeField] CanvasGroup endScreen;
+
     [SerializeField] GameObject bottomPanel;
 
-    [SerializeField] GameObject exitPopup;
+    [SerializeField] CanvasGroup exitPopup;
 
     [SerializeField] GameObject exitBtn;
 
     [SerializeField] Transform starsParent;
 
-    [SerializeField] VideoPlayer completeCigiVideo;
+    //[SerializeField] VideoPlayer completeCigiVideo;
+    [Header("Animators")]
     [SerializeField] Animator endScreenAnimator;
     [SerializeField] Animator congratsScreenAnimator;
+    [SerializeField] Animator confitiAnimator;
 
     private void Awake()
     {
@@ -38,7 +41,8 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         bottomPanel.SetActive(false);
-        warningScreen.SetActive(true);
+        //warningScreen.SetActive(true);
+        //OpenNextScreen(null, warningScreen);
         exitBtn.SetActive(false);
         Invoke("StartGame", 2.0f);
     }
@@ -57,15 +61,17 @@ public class UIManager : MonoBehaviour
     void StartGame()
     {
         exitBtn.SetActive(true);
-        warningScreen.SetActive(false);
         bottomPanel.SetActive(true);
-        startScreen.SetActive(true);
+        //warningScreen.SetActive(false);
+        //startScreen.SetActive(true);
+        OpenNextScreen(warningScreen, startScreen);
     }
 
     public void gameOver()
     {
         //EventManager.Instance.isStartGame = false;
-        congratulationScreen.SetActive(false);
+        //congratulationScreen.SetActive(false);
+        OpenNextScreen(congratulationScreen, null);
         //EventManager.Instance.isGameOver = true;
 
         CameraManager.Instance.transform.DOMove(new Vector3(0, 12.59f, -5.5f), 0.5f);
@@ -76,22 +82,30 @@ public class UIManager : MonoBehaviour
 
     void EndGame()
     {
+        starsParent.GetChild(0).localScale = Vector3.zero;
+        starsParent.GetChild(1).localScale = Vector3.zero;
+        starsParent.GetChild(2).localScale = Vector3.zero;
+
         Utility.SoundManager.Instance.Play("complete");
-        congratulationScreen.SetActive(true);
-        //congratsScreenAnimator.enabled = true;
+        //congratulationScreen.SetActive(true);
+        OpenNextScreen(null, congratulationScreen);
+        congratsScreenAnimator.enabled = true;
+        confitiAnimator.enabled = true;
         //completeCigiVideo.Stop();
-        //endScreenAnimator.enabled = false;
+        endScreenAnimator.enabled = false;
 
         DOTween.Sequence().Append(starsParent.GetChild(0).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .Append(starsParent.GetChild(1).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .Append(starsParent.GetChild(2).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
-                            .AppendInterval(3f)
+                            .AppendInterval(6.6f)
                             .OnComplete(() => {
-                                //congratsScreenAnimator.enabled = false;
-                                congratulationScreen.SetActive(false);
-                                endScreen.SetActive(true);
+                                congratsScreenAnimator.enabled = false;
+                                confitiAnimator.enabled = false;
+                                //congratulationScreen.SetActive(false);
+                                //endScreen.SetActive(true);
+                                OpenNextScreen(congratulationScreen, endScreen);
                                 //completeCigiVideo.Play();
-                                //endScreenAnimator.enabled = true;
+                                endScreenAnimator.enabled = true;
                             });
 
         //endScreen.SetActive(true);
@@ -105,8 +119,10 @@ public class UIManager : MonoBehaviour
         Utility.SoundManager.Instance.Play("btn_click");
         EventManager.Instance.isGameOver = false;
         EventManager.StartGame?.Invoke();
-        startScreen.SetActive(false);
-        endScreen.SetActive(false);
+        //startScreen.SetActive(false);
+        //endScreen.SetActive(false);
+        OpenNextScreen(startScreen, null);
+        OpenNextScreen(endScreen, null);
 
         //CameraManager.Instance.cameraAnim.SetTrigger("Play");
         Invoke("DoneAnim", 1.5f);
@@ -141,11 +157,13 @@ public class UIManager : MonoBehaviour
 
     public void Open_ExitPopup()
     {
-        exitPopup.SetActive(true);
+        OpenNextScreen(null, exitPopup);
+        //exitPopup.SetActive(true);
     }
     public void Close_ExitPopup()
     {
-        exitPopup.SetActive(false);
+        OpenNextScreen(exitPopup, null);
+        //exitPopup.SetActive(false);
     }
     public void ExitGame()
     {
@@ -154,4 +172,21 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
+    void OpenNextScreen(CanvasGroup hideScreen, CanvasGroup showScreen)
+    {
+        if (hideScreen)
+        {
+            hideScreen.DOFade(0, 0.5f);
+            hideScreen.interactable = false;
+            hideScreen.blocksRaycasts = false;
+            hideScreen.ignoreParentGroups = false;
+        }
+        if (showScreen)
+        {
+            showScreen.DOFade(1, 0.5f);
+            showScreen.interactable = true;
+            showScreen.blocksRaycasts = true;
+            showScreen.ignoreParentGroups = true;
+        }
+    }
 }

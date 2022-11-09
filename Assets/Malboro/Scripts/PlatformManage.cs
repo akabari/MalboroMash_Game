@@ -46,6 +46,8 @@ public class PlatformManage : MonoBehaviour
         CameraSwitcher.Register(focussOnCigi);
         CameraSwitcher.SwitchCamera(fullView);
 
+        //DOTween.Sequence().AppendInterval(1.0f).OnComplete(() => { EventManager.CollectItems?.Invoke(true, 1); });
+
         //CollectItems(true);
     }
     private void OnDisable()
@@ -64,6 +66,19 @@ public class PlatformManage : MonoBehaviour
         num -= 1;
         Malboro.Cigarette.IsKinematic?.Invoke(obj);
 
+        switch (num)
+        {
+            case 0:
+                playerMash.transform.eulerAngles = new Vector3(60, 180, 0);
+                break;
+            case 1:
+                playerMash.transform.eulerAngles = new Vector3(-160, 180, 0);
+                break;
+            case 2:
+                playerMash.transform.eulerAngles = new Vector3(-40, 180, 0);
+                break;
+        }
+
         if (num == 0)
         {
             playerMash.material.SetTexture("_MainTex", newCigrateTexture);
@@ -73,51 +88,71 @@ public class PlatformManage : MonoBehaviour
                 CameraSwitcher.SwitchCamera(followView);
 
                 DOTween.Sequence().AppendInterval(0.7f).OnComplete(() => {
-                    collectUI[num].SetActive(obj);
-                    collectUI[num].transform.position = USP_Position.position; //new Vector3(USP_Position.position.x, USP_Position.position.y, 1);
-                                                                               //collectUI[num].transform.GetChild(0).GetChild(0).DOMoveZ(1, 0.5f);
-                    collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f)
-                                                    .OnComplete(() => {
-                                                        collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f);
-                                                //collectUI[num].transform.GetChild(0).GetChild(1).DOMoveZ(1, 0.5f);
-                                                collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f);
-                                                    });
+                    AnimateUSP(obj, num);
 
-                    if (obj)
-                    {
-                        Utility.SoundManager.Instance.Play("transition");
-                        DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
-                        {
-                            collectUI[num].SetActive(false);
-                            Malboro.Cigarette.IsKinematic?.Invoke(false);
-                        });
-                    }
+                    //if (obj)
+                    //{
+                    //    Utility.SoundManager.Instance.Play("transition");
+                    //    DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
+                    //    {
+                    //        collectUI[num].SetActive(false);
+                    //        Malboro.Cigarette.IsKinematic?.Invoke(false);
+                    //    });
+                    //}
                 });
             });
         }
         else
         {
-            collectUI[num].SetActive(obj);
-            collectUI[num].transform.position = USP_Position.position; //new Vector3(USP_Position.position.x, USP_Position.position.y, 1);
-                                                                       //collectUI[num].transform.GetChild(0).GetChild(0).DOMoveZ(1, 0.5f);
-            collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 0.5f)
-                                            .OnComplete(() => {
-                                                collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 0.5f);
-                                            //collectUI[num].transform.GetChild(0).GetChild(1).DOMoveZ(1, 0.5f);
-                                            collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f);
-                                            });
+            AnimateUSP(obj, num);
 
-            if (obj)
-            {
-                Utility.SoundManager.Instance.Play("transition");
-                DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
-                {
-                    collectUI[num].SetActive(false);
-                    Malboro.Cigarette.IsKinematic?.Invoke(false);
-                });
-            }
+            //if (obj)
+            //{
+            //    Utility.SoundManager.Instance.Play("transition");
+            //    DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
+            //    {
+            //        collectUI[num].SetActive(false);
+            //        Malboro.Cigarette.IsKinematic?.Invoke(false);
+            //    });
+            //}
 
         }
+    }
+
+    void AnimateUSP(bool obj, int num)
+    {
+        collectUI[num].SetActive(obj);
+        collectUI[num].transform.position = USP_Position.position; //new Vector3(USP_Position.position.x, USP_Position.position.y, 1);
+
+        collectUI[num].transform.GetChild(0).DOLocalMove(new Vector3(0, -0.7f, -0.7f), 1f);
+        collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.one, 1f)
+                                        .OnComplete(() => {
+                                            collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.one, 1f);
+                                            DOTween.Sequence().AppendInterval(0.5f)
+                                                                .Append(collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(1, 0.5f));
+                                        });
+
+        if (obj)
+        {
+            Utility.SoundManager.Instance.Play("transition");
+            DOTween.Sequence().AppendInterval(3.0f).OnComplete(() =>
+            {
+                ResetUSP(num);
+            });
+        }
+    }
+    void ResetUSP(int num)
+    {
+        collectUI[num].transform.GetChild(0).DOLocalMove(Vector3.zero, 0.5f);
+        collectUI[num].transform.GetChild(0).GetChild(0).DOScale(Vector3.zero, 0.5f)
+                                        .OnComplete(() => {
+                                            collectUI[num].SetActive(false);
+                                            Malboro.Cigarette.IsKinematic?.Invoke(false);
+                                        });
+        collectUI[num].transform.GetChild(0).GetChild(1).DOScale(Vector3.zero, 0.5f);
+        collectUI[num].transform.GetChild(0).GetComponent<Image>().DOFade(0, 0.1f);
+
+        
     }
 
     void DisableCollectUI(int num)
