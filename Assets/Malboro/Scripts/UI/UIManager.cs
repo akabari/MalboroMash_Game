@@ -89,23 +89,30 @@ public class UIManager : MonoBehaviour
         Utility.SoundManager.Instance.Play("complete");
         //congratulationScreen.SetActive(true);
         OpenNextScreen(null, congratulationScreen);
-        congratsScreenAnimator.enabled = true;
-        confitiAnimator.enabled = true;
+        //congratsScreenAnimator.enabled = false;
+        //congratsScreenAnimator.enabled = true;
+        congratsScreenAnimator.Play(0);
+
+        //confitiAnimator.enabled = false;
+        //confitiAnimator.enabled = true;
+        confitiAnimator.Play(0);
         //completeCigiVideo.Stop();
-        endScreenAnimator.enabled = false;
+        //endScreenAnimator.enabled = false;
 
         DOTween.Sequence().Append(starsParent.GetChild(0).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .Append(starsParent.GetChild(1).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .Append(starsParent.GetChild(2).DOScale(Vector3.one, 0.3f).SetEase(Ease.InOutBounce))
                             .AppendInterval(6.6f)
                             .OnComplete(() => {
-                                congratsScreenAnimator.enabled = false;
-                                confitiAnimator.enabled = false;
+                                //congratsScreenAnimator.enabled = false;
+                                //confitiAnimator.enabled = false;
                                 //congratulationScreen.SetActive(false);
                                 //endScreen.SetActive(true);
                                 OpenNextScreen(congratulationScreen, endScreen);
                                 //completeCigiVideo.Play();
-                                endScreenAnimator.enabled = true;
+                                //endScreenAnimator.enabled = false;
+                                //endScreenAnimator.enabled = true;
+                                endScreenAnimator.Play(0);
                             });
 
         //endScreen.SetActive(true);
@@ -126,6 +133,10 @@ public class UIManager : MonoBehaviour
 
         //CameraManager.Instance.cameraAnim.SetTrigger("Play");
         Invoke("DoneAnim", 1.5f);
+
+        //congratsScreenAnimator.enabled = false;
+        //confitiAnimator.enabled = false;
+        //endScreenAnimator.enabled = false;
     }
     void DoneAnim()
     {

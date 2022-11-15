@@ -13,8 +13,11 @@ namespace Malboro
         [SerializeField] private float speed = 10f;
 
         public float speedAc = 10;
+        public float rotateSpeed = 10;
+        float rotateDirection = 0;
 
         [SerializeField] Transform player;
+        Vector3 previousPos;
 
         private Rigidbody rb;
 
@@ -38,9 +41,6 @@ namespace Malboro
         {
             rb = GetComponent<Rigidbody>();
 
-            //Input.gyro.enabled = true;
-            //Input.gyro.updateInterval = 0.0167f;
-
 #if !UNITY_EDITOR
             InputSystem.EnableDevice(Gyroscope.current);
             InputSystem.EnableDevice(Accelerometer.current);
@@ -48,8 +48,6 @@ namespace Malboro
             Input.gyro.enabled = true;
             Input.gyro.updateInterval = 0.0167f;
 #endif
-            //Debug.Log("Gyroscope.current.enabled : " + Gyroscope.current.enabled);
-
             isKinematic(true);
         }
 
@@ -57,23 +55,9 @@ namespace Malboro
         {
             if (EventManager.Instance.isGameOver || EventManager.Instance.isUIOpen || rb.isKinematic)
             {
-                //Debug.Log("isGameOver : " + EventManager.Instance.isGameOver);
                 return;
             }
 
-            //Vector3 acceleration = Accelerometer.current.acceleration.ReadValue();
-            //Debug.Log(acceleration);
-
-            //Quaternion deviceRotation = DeviceRotation.Get();
-            //transform.rotation = Quaternion.Euler(deviceRotation.eulerAngles.x, 0, 0);
-
-            //Vector3 movement = new Vector3(Input.acceleration.x, 0.0f, Input.acceleration.y);
-            //Debug.Log("Input.acceleration : " + tilt);
-            //tilt = (Quaternion.Euler(deviceRotation.eulerAngles.x, 0, 0) * tilt) * speed;
-
-
-            //rb.AddForce(tilt, ForceMode.Force);
-            //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
 
 #if !UNITY_EDITOR
 
@@ -81,23 +65,55 @@ namespace Malboro
             Vector3 movement = new Vector3(angularVelocity.x, 0.0f, angularVelocity.y);
             rb.AddForce(movement * speed * Time.deltaTime);
 
-            player.Rotate(Vector3.right * angularVelocity.y * speed, Space.World);
+            if (previousPos.z > rb.position.z)
+            {
+                rotateDirection = -1;
+                //rotateDirection = (angularVelocity.y < 0 ? angularVelocity.y : -angularVelocity.y);
+            }
+            else if (previousPos.z < rb.position.z)
+            {
+                rotateDirection = 1;
+                //rotateDirection = (angularVelocity.y > 0 ? angularVelocity.y : -angularVelocity.y);
+            }
+            else
+            {
+                rotateDirection = 0;
+            }
+
+            Debug.Log(angularVelocity);
+            player.Rotate(Vector3.right * rotateDirection * rotateSpeed, Space.World);
 #else
 
 
             Vector3 movement = new Vector3(Input.gyro.gravity.x, 0.0f, Input.gyro.gravity.y);
             rb.AddForce(movement * speed * Time.deltaTime);
 
-            player.Rotate(Vector3.right * Input.acceleration.y * speed, Space.World);
+            if (previousPos.z > rb.position.z)
+            {
+                rotateDirection = -1;
+                //rotateDirection = (movement.z < 0 ? movement.z : -movement.z);
+            }
+            else if (previousPos.z < rb.position.z)
+            {
+                rotateDirection = 1;
+                //rotateDirection = (movement.z > 0 ? movement.z : -movement.z);
+            }
+            else
+            {
+                rotateDirection = 0;
+            }
+            
+
+            player.Rotate(Vector3.right * rotateDirection * rotateSpeed, Space.World);
 
 #endif
-            // Player movement in mobile devices
-            // Building of force vector 
-            //Vector3 movement = new Vector3(Input.gyro.gravity.x, 0.0f, Input.gyro.gravity.y);
-            // Adding force to rigidbody
-            //rb.AddForce(movement * speed * Time.deltaTime);
 
+            
+        }
 
+        private void LateUpdate()
+        {
+            previousPos = rb.position;
         }
 
     }

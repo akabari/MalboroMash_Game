@@ -83,6 +83,11 @@ public class PlatformManage : MonoBehaviour
         {
             playerMash.material.SetTexture("_MainTex", newCigrateTexture);
 
+            DOTween.Sequence().Append(DOVirtual.Float(0, 10f, 1f, v => playerMash.GetComponent<Outline>().OutlineWidth = v))
+                                .AppendInterval(0.5f)
+                                .Append(DOVirtual.Float(10, 0f, 0.5f, v => playerMash.GetComponent<Outline>().OutlineWidth = v));
+
+
             CameraSwitcher.SwitchCamera(focussOnCigi);
             DOTween.Sequence().AppendInterval(3.0f).OnComplete(() => {
                 CameraSwitcher.SwitchCamera(followView);
